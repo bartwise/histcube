@@ -1,4 +1,7 @@
-pydantic
-neo4j
-dotenv
 black
+dotenv
+langchain
+langchain-ollama
+neo4j
+pydantic
+shapely

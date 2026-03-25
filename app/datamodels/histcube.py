@@ -173,3 +173,20 @@ class Event(Neo4jModel):
             props = dict(record["n"]) if "n" in record else {}
             props["node_id"] = record["node_id"]
             return cls(**props)
+
+class HistoricalLocation(Neo4jModel):
+    name: str = Field(..., description="Name of the historical location")
+    description: str | None = Field(None, description="Description of the historical location")
+    geojson: dict = Field(None, description="GeoJSON data representing the location's geometry")
+
+    @classmethod
+    def get_by_name(cls, name: str) -> Optional["HistoricalLocation"]:
+        cypher = f"MATCH (n:{cls._label()} {{name: $name}}) RETURN id(n) AS node_id, n LIMIT 1"
+        with session() as s:
+            result = s.run(cypher, name=name)
+            record = result.single()
+            if not record:
+                return None
+            props = dict(record["n"]) if "n" in record else {}
+            props["node_id"] = record["node_id"]
+            return cls(**props)
